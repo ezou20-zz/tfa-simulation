@@ -20,9 +20,9 @@ It stops when there are no cycles left.
 import random
 from collections import defaultdict
 
-import graph_tool.all
+# import graph_tool.all
 
-from graph_tool.all import Graph, graph_draw, all_circuits, sfdp_layout
+# from graph_tool.all import Graph, graph_draw, all_circuits, sfdp_layout
 
 from py_school_match.algorithms.abstract_matching_algorithm import AbstractMatchingAlgorithm
 from py_school_match.entities.student_queue import StudentQueue
@@ -33,6 +33,7 @@ STACK_SAFE_LIMIT = 0.3
 
 
 class PI(AbstractMatchingAlgorithm):
+    pass
     """This class searches for cycles of *'Pareto Improvement'*.
 
     This takes a list of students, a list of schools and a ruleset

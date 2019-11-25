@@ -5,7 +5,7 @@ This implementation is based on Abdulkadiroglu and Sonmez (2003).
    This algorithm is considerably slower than the others. 
 """
 
-from graph_tool.all import Graph, graph_draw, all_circuits, arf_layout
+# from graph_tool.all import Graph, graph_draw, all_circuits, arf_layout
 
 from py_school_match.algorithms.abstract_matching_algorithm import AbstractMatchingAlgorithm
 from py_school_match.entities.student_queue import StudentQueue
