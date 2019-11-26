@@ -41,11 +41,16 @@ def create_schools():
     print("TOTAL CAPACITY:", total_capacity)
     return regions, schools
 
-def create_students():
-    pass
-    # create/set student.category_preferences to random order over regions.keys()
-    # for each region in order, randomly sort region's schools and add to student.global_preferences
+def create_students(regions, schools):
+    students = []
+    # set student.category_preferences to random order over regions
+    # for each region in order, randomly sort region's schools and add to student.preferences
+    return students
 
+    # EXAMPLES
+    # sc0 = psm.School(1)
+    # sc1 = psm.School(1)
+    # sc2 = psm.School(1)
 
     # st0 = psm.Student()
     # st1 = psm.Student()
@@ -55,21 +60,18 @@ def create_students():
     # st1.preferences = [sc0, sc2, sc1]
     # st2.preferences = [sc2, sc1, sc0]
 
+def permute_preferences(students, k):
+    # for each student, randomly swap k times within student.preferences
+    return 
+
 def compare_matchings(matching1, matching2):
     pass
 
-
-def run_simulation():
-    random.seed(42)
-
-    psm.Student.reset_ids()
-    psm.School.reset_ids()
-    
-    students = create_students()
-    regions, schools = create_schools()
+def get_k_matchings(k, regions, schools, students):
     one_stage_matches = {} # dict mapping student id to School (objects)
     two_stage_matches = {} # same
 
+    permute_preferences(students, k)
     # TWO-STAGE MATCHING
     # stage 1: match between students and regions
     two_stage_planner = psm.SocialPlanner(students, regions, psm.RuleSet())
@@ -97,20 +99,23 @@ def run_simulation():
     for student in students:
         one_stage_matches[student.id] = student.assigned_school
 
-    print("TWO-STAGE RESULT:", two_stage_matches)
-    print("ONE-STAGE RESULT:", one_stage_matches)
+    # print("TWO-STAGE RESULT:", two_stage_matches)
+    # print("ONE-STAGE RESULT:", one_stage_matches)
+    return one_stage_matches, two_stage_matches
+
+def run_simulation():
+    random.seed(42)
+
+    psm.Student.reset_ids()
+    psm.School.reset_ids()
+    
+    regions, schools = create_schools()
+    students = create_students(regions, schools)
+
+    # eventually loop for different k
+    k = 0
+    one_stage_matches, two_stage_matches = get_k_matchings(k, regions, schools, students)
     compare_matchings(one_stage_matches, two_stage_matches)
-
-
-
-
-    planner = psm.SocialPlanner(students, schools, psm.RuleSet())
-
-def test_dastb():
-    planner.run_matching(psm.DASTB())
-    assertEqual(st0.assigned_school.id, 0)
-    assertEqual(st1.assigned_school.id, 1)
-    assertEqual(st2.assigned_school.id, 2)
 
 
 run_simulation()
