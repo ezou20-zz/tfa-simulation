@@ -18,6 +18,7 @@ class Student:
         """
         self._id = id_ if id_ else next(Student.__id_counter)
         self.preferences = []
+        
 
         self.__characteristics = defaultdict(list)
 

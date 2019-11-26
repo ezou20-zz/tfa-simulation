@@ -15,7 +15,7 @@ class DA(AbstractMatchingAlgorithm):
     or reject these students based on their priority.
     """
 
-    def run(self, students, schools, ruleset):
+    def run(self, students, schools, ruleset, preference_type=None):
         """Runs the *Deferred Acceptance* algorithm.
 
         :param students: List of students.
@@ -36,15 +36,21 @@ class DA(AbstractMatchingAlgorithm):
             for student in students:
 
                 if not student.assigned:
-                    pref_school = student.preferences[student.option_n]
+                    student_preferences = student.preferences
+                    if preference_type == "category":
+                        student_preferences = student.category_preferences
+                    else:
+                        pref_school = student_preferences[student.option_n]
                     DA.assign_student(student, pref_school)
 
                     rejected_student = pref_school.assignation.get_rejected_student()
 
                     if rejected_student:
                         rejected_student.option_n += 1
-
-                        if rejected_student.option_n < len(rejected_student.preferences):
+                        rejected_student_preferences = rejected_student.preferences
+                        if preference_type == "category":
+                            rejected_student_preferences = rejected_student.category_preferences
+                        if rejected_student.option_n < len(rejected_student_preferences):
                             DA.unassign_student(rejected_student)
                             still_free_students = True
                         else:
