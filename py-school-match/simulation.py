@@ -36,6 +36,8 @@ def create_schools():
 
                 total_capacity += capacity
                 region_capacity += capacity
+
+            # initialize region as Category object with list of schools
             region = psm.Category(region_name, region_schools, region_capacity)
             regions.append(region)
     print("TOTAL CAPACITY:", total_capacity)
