@@ -4,38 +4,41 @@ import csv
 from collections import defaultdict
 from py_school_match.entities.student_queue import StudentQueue
 
-schools_per_region_by_size = {"S": 20, "M": 60, "L": 100}
-total_cap = 0
+schools_per_region_by_size = {"S": 10, "M": 30, "L": 50}
 
 def print_matches(students):
     for student in students:
-    if student.assigned_school is not None:
-        print("Student {} was assigned to School {}".format(student.id, student.assigned_school.id))
-    else:
-        print("Student {} was not assigned to any school".format(student.id))
+        if student.assigned_school is not None:
+            print("Student {} was assigned to School {}".format(student.id, student.assigned_school.id))
+        else:
+            print("Student {} was not assigned to any school".format(student.id))
 
 def create_schools():
-    global total_cap, regions
     schools, regions = [], []
-    with open('../data/schools.csv', newline='') as regions:
-        filereader = csv.reader(regions, delimiter=',')
+    total_capacity = 0
+
+    # get region names and sizes from data file
+    with open('../data/schools.csv', newline='') as datafile:
+        filereader = csv.reader(datafile, delimiter=',')
         for row in filereader:
-            print(row)
             [region_name, size] = row
-            region_cap = 0
+            region_capacity = 0
             region_schools = []
-            for i in range(schools_per_region_by_size[size]):
+            region_size = schools_per_region_by_size[size]
+
+            # iterate through # of schools in region and create schools w/ random caps
+            for i in range(region_size):
                 capacity = random.randint(1,5)
                 school = psm.School(capacity)
                 school.category = region_name
                 schools.append(school)
                 region_schools.append(school)
 
-                total_cap += capacity
-                region_cap += capacity
-            region = psm.Category(region_name, region_schools, region_cap)
+                total_capacity += capacity
+                region_capacity += capacity
+            region = psm.Category(region_name, region_schools, region_capacity)
             regions.append(region)
-    print("TOTAL CAPACITY:", total_cap)
+    print("TOTAL CAPACITY:", total_capacity)
     return regions, schools
 
 def create_students():
@@ -44,13 +47,13 @@ def create_students():
     # for each region in order, randomly sort region's schools and add to student.global_preferences
 
 
-    st0 = psm.Student()
-    st1 = psm.Student()
-    st2 = psm.Student()
+    # st0 = psm.Student()
+    # st1 = psm.Student()
+    # st2 = psm.Student()
 
-    st0.preferences = [sc0, sc1, sc2]
-    st1.preferences = [sc0, sc2, sc1]
-    st2.preferences = [sc2, sc1, sc0]
+    # st0.preferences = [sc0, sc1, sc2]
+    # st1.preferences = [sc0, sc2, sc1]
+    # st2.preferences = [sc2, sc1, sc0]
 
 def compare_matchings(matching1, matching2):
     pass

@@ -30,9 +30,9 @@ class SocialPlanner:
         for school in self.schools:
             school.set_ruleset_n_reset(self.ruleset)  # ToDo: The assignation should update itself!
 
-    def run_matching(self, algorithm):
+    def run_matching(self, algorithm, preference_type=None):
         """Run the algorithm."""
-        algorithm.run(self.students, self.schools, self.ruleset)
+        algorithm.run(self.students, self.schools, self.ruleset, preference_type=None)
 
     @staticmethod
     def change_ruleset(school, ruleset):

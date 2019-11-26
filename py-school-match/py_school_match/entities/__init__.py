@@ -7,6 +7,7 @@ from py_school_match.entities.ruleset import RuleSet
 from py_school_match.entities.rule import Rule
 
 from py_school_match.entities.school import School
+from py_school_match.entities.category import Category
 from py_school_match.entities.slot import Slot
 
 from py_school_match.entities.social_planner import SocialPlanner
