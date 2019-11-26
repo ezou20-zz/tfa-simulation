@@ -116,6 +116,8 @@ def run_simulation():
     students = create_students(regions, schools)
 
     # eventually loop for different k_arrays
+    # using array allows for different degrees of randomness between students
+    # eg. first half completely parameterized by region, second half very random
     k_array = [0] * len(students)
     one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
     compare_matchings(one_stage_matches, two_stage_matches)
