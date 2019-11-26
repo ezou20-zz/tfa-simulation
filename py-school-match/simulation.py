@@ -62,18 +62,19 @@ def create_students(regions, schools):
     # st1.preferences = [sc0, sc2, sc1]
     # st2.preferences = [sc2, sc1, sc0]
 
-def permute_preferences(students, k):
-    # for each student, randomly swap k times within student.preferences
+def permute_preferences(students, k_array):
+    # for each student i, randomly swap k_array[i] times within student.preferences
+    # using array allows for different degrees of randomness between students
     return 
 
 def compare_matchings(matching1, matching2):
     pass
 
-def get_k_matchings(k, regions, schools, students):
+def get_matchings(k_array, regions, schools, students):
     one_stage_matches = {} # dict mapping student id to School (objects)
     two_stage_matches = {} # same
 
-    permute_preferences(students, k)
+    permute_preferences(students, k_array)
     # TWO-STAGE MATCHING
     # stage 1: match between students and regions
     two_stage_planner = psm.SocialPlanner(students, regions, psm.RuleSet())
@@ -114,9 +115,9 @@ def run_simulation():
     regions, schools = create_schools()
     students = create_students(regions, schools)
 
-    # eventually loop for different k
-    k = 0
-    one_stage_matches, two_stage_matches = get_k_matchings(k, regions, schools, students)
+    # eventually loop for different k_arrays
+    k_array = [0] * len(students)
+    one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
     compare_matchings(one_stage_matches, two_stage_matches)
 
 
