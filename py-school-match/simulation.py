@@ -41,30 +41,42 @@ def create_schools():
             region = psm.Category(region_name, region_schools, region_capacity)
             regions.append(region)
     print("TOTAL CAPACITY:", total_capacity)
-    return regions, schools
+    return regions, schools, total_capacity
 
-def create_students(regions, schools):
+def create_students(regions, schools, total_capacity):
     students = []
+    num_students = int(total_capacity * 0.8)
+
     # set student.category_preferences to random order over regions
     # for each region in order, randomly sort region's schools and add to student.preferences
+    for i in range(num_students):
+        student = psm.Student()
+        school_prefs = []
+        region_prefs = [i for i in regions]
+        random.shuffle(region_prefs)
+        student.category_preferences = region_prefs
+
+        for region in region_prefs:
+            region_school_prefs = [i for i in region.schools]
+            random.shuffle(region_school_prefs)
+            school_prefs.append(region_school_prefs)
+
+        student.preferences = school_prefs
+        students.append(student)
     return students
 
-    # EXAMPLES
-    # sc0 = psm.School(1)
-    # sc1 = psm.School(1)
-    # sc2 = psm.School(1)
-
-    # st0 = psm.Student()
-    # st1 = psm.Student()
-    # st2 = psm.Student()
-
-    # st0.preferences = [sc0, sc1, sc2]
-    # st1.preferences = [sc0, sc2, sc1]
-    # st2.preferences = [sc2, sc1, sc0]
-
 def permute_preferences(students, k_array):
+    
     # for each student i, randomly swap k_array[i] times within student.preferences
     # using array allows for different degrees of randomness between students
+    for i in range (len(students)):
+        student = students[i]
+        lst = student.preferences
+        num_schools = len(lst)
+        for k in range(k_array[i]):
+            i1,i2 = random.sample(range(num_schools), 2)
+            lst[i1], lst[i2] = lst[i2], lst[i1]
+        student.preferences = lst
     return 
 
 def compare_matchings(matching1, matching2):
@@ -112,8 +124,8 @@ def run_simulation():
     psm.Student.reset_ids()
     psm.School.reset_ids()
     
-    regions, schools = create_schools()
-    students = create_students(regions, schools)
+    regions, schools, total_capacity = create_schools()
+    students = create_students(regions, schools, total_capacity)
 
     # eventually loop for different k_arrays
     # using array allows for different degrees of randomness between students
