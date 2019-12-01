@@ -79,8 +79,37 @@ def permute_preferences(students, k_array):
         student.preferences = lst
     return 
 
-def compare_matchings(matching1, matching2):
-    pass
+def compare_matchings(students, matching1, matching2):
+    # COULD NOT RUN CODE SO NO GUARANTEE THIS WORKS
+
+    # total number of students better off in matching 1
+    total_better = 0
+
+    # total number of students with same matching
+    total_same = 0
+
+    # total number of students worse off in matching 1
+    total_worse = 0
+
+    # total change in utility (based on rank of schools matched per student) from matching 1 to 2
+    delta_rank_utility = 0
+    for student in students:
+        prefs = student.preferences
+        s_id = student.id
+        school1_rank = prefs.index(matching1[s_id])
+        school2_rank = prefs.index(matching2[s_id])
+        delta_rank_utility += school1_rank - school2_rank
+        if school1_rank > school2_rank: total_better += 1
+        elif school1_rank == school2_rank: total_same += 1
+        else: total_worse += 1
+
+    return {
+        "better": total_better,
+        "same": total_same,
+        "worse": total_worse,
+        "delta": delta_rank_utility,
+    }
+
 
 def get_matchings(k_array, regions, schools, students):
     one_stage_matches = {} # dict mapping student id to School (objects)
@@ -132,7 +161,7 @@ def run_simulation():
     # eg. first half completely parameterized by region, second half very random
     k_array = [0] * len(students)
     one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
-    compare_matchings(one_stage_matches, two_stage_matches)
+    compare_matchings(students, one_stage_matches, two_stage_matches)
 
 
 run_simulation()
