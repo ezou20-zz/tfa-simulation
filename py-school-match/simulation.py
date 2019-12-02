@@ -59,7 +59,7 @@ def create_students(regions, schools, total_capacity):
         for region in region_prefs:
             region_school_prefs = [i for i in region.schools]
             random.shuffle(region_school_prefs)
-            school_prefs.append(region_school_prefs)
+            school_prefs.extend(region_school_prefs)
 
         student.preferences = school_prefs
         students.append(student)
@@ -117,10 +117,12 @@ def get_matchings(k_array, regions, schools, students):
 
     permute_preferences(students, k_array)
     # TWO-STAGE MATCHING
+    print("Starting stage 1")
     # stage 1: match between students and regions
     two_stage_planner = psm.SocialPlanner(students, regions, psm.RuleSet())
     two_stage_planner.run_matching(psm.DASTB(), preference_type="category")
     
+    print("Starting stage 2")
     # stage 2: iterate through each region and match within
     for region in regions:
         region_students = region.assignation.get_all_students()
