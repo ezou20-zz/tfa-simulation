@@ -117,6 +117,7 @@ def get_matchings(k_array, regions, schools, students):
 
     permute_preferences(students, k_array)
     # TWO-STAGE MATCHING
+    print("Starting two-stage")
     print("Starting stage 1")
     # stage 1: match between students and regions
     two_stage_planner = psm.SocialPlanner(students, regions, psm.RuleSet())
@@ -138,7 +139,7 @@ def get_matchings(k_array, regions, schools, students):
 
         for student in region_students:
             two_stage_matches[student.id] = student.assigned_school
-
+    print("Starting one-stage")
     # ONE-STAGE MATCHING
     one_stage_planner = psm.SocialPlanner(students, schools, psm.RuleSet())
     one_stage_planner.run_matching(psm.DASTB())
