@@ -4,5 +4,6 @@ class Category(School):
 	def __init__(self, name, schools, capacity, id_=""):
 		self.name = name
 		self.schools = schools
-		self.capacity = capacity
-		School.__init__(self, capacity, id_="")
+		super(Category, self).__init__(capacity, id_)
+		print("Category ID", self.id)
+		print(self.get_ruleset())

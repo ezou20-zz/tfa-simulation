@@ -4,7 +4,7 @@ import csv
 from collections import defaultdict
 from py_school_match.entities.student_queue import StudentQueue
 
-schools_per_region_by_size = {"S": 10, "M": 30, "L": 50}
+schools_per_region_by_size = {"S": 3, "M": 30, "L": 50}
 
 def print_matches(students):
     for student in students:
@@ -18,7 +18,7 @@ def create_schools():
     total_capacity = 0
 
     # get region names and sizes from data file
-    with open('../data/schools.csv', newline='') as datafile:
+    with open('../data/test_schools.csv', newline='') as datafile:
         filereader = csv.reader(datafile, delimiter=',')
         for row in filereader:
             [region_name, size] = row
@@ -66,10 +66,9 @@ def create_students(regions, schools, total_capacity):
     return students
 
 def permute_preferences(students, k_array):
-    
     # for each student i, randomly swap k_array[i] times within student.preferences
     # using array allows for different degrees of randomness between students
-    for i in range (len(students)):
+    for i in range(len(students)):
         student = students[i]
         lst = student.preferences
         num_schools = len(lst)
@@ -116,14 +115,26 @@ def get_matchings(k_array, regions, schools, students):
     two_stage_matches = {} # same
 
     permute_preferences(students, k_array)
+
+    print("Starting one-stage")
+    # ONE-STAGE MATCHING
+    one_stage_planner = psm.SocialPlanner(students, schools, psm.RuleSet())
+    one_stage_planner.run_matching(psm.DASTB())
+    for student in students:
+        one_stage_matches[student.id] = student.assigned_school
+
+    for student in students:
+            student.assigned_school = None
     # TWO-STAGE MATCHING
     print("Starting two-stage")
     print("Starting stage 1")
     # stage 1: match between students and regions
     two_stage_planner = psm.SocialPlanner(students, regions, psm.RuleSet())
+    print("test")
     two_stage_planner.run_matching(psm.DASTB(), preference_type="category")
     
     print("Starting stage 2")
+
     # stage 2: iterate through each region and match within
     for region in regions:
         region_students = region.assignation.get_all_students()
@@ -139,30 +150,26 @@ def get_matchings(k_array, regions, schools, students):
 
         for student in region_students:
             two_stage_matches[student.id] = student.assigned_school
-    print("Starting one-stage")
-    # ONE-STAGE MATCHING
-    one_stage_planner = psm.SocialPlanner(students, schools, psm.RuleSet())
-    one_stage_planner.run_matching(psm.DASTB())
-    for student in students:
-        one_stage_matches[student.id] = student.assigned_school
 
-    # print("TWO-STAGE RESULT:", two_stage_matches)
-    # print("ONE-STAGE RESULT:", one_stage_matches)
+    print("ONE-STAGE RESULT:", {k:v.id for k, v in one_stage_matches.items()})
+    print("TWO-STAGE RESULT:", {k:v.id for k, v in two_stage_matches.items()})
     return one_stage_matches, two_stage_matches
 
 def run_simulation():
     random.seed(42)
-
+    print("reset")
     psm.Student.reset_ids()
     psm.School.reset_ids()
-    
+    print("creating schools")
     regions, schools, total_capacity = create_schools()
+    print("creating students")
     students = create_students(regions, schools, total_capacity)
 
     # eventually loop for different k_arrays
     # using array allows for different degrees of randomness between students
     # eg. first half completely parameterized by region, second half very random
     k_array = [0] * len(students)
+    print("get matchings")
     one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
     compare_matchings(students, one_stage_matches, two_stage_matches)
 

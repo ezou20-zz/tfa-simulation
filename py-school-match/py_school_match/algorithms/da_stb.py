@@ -40,7 +40,7 @@ class DASTB(AbstractMatchingAlgorithm):
         ruleset.add_rule(lottery_rule)
 
         self.break_ties(students)
-        DA().run(students, schools, ruleset, preference_type=None)
+        DA().run(students, schools, ruleset, preference_type)
 
         ruleset.remove_rule(lottery_rule)
 

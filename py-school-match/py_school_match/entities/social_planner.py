@@ -32,7 +32,7 @@ class SocialPlanner:
 
     def run_matching(self, algorithm, preference_type=None):
         """Run the algorithm."""
-        algorithm.run(self.students, self.schools, self.ruleset, preference_type=None)
+        algorithm.run(self.students, self.schools, self.ruleset, preference_type)
 
     @staticmethod
     def change_ruleset(school, ruleset):

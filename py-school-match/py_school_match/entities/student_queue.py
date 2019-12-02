@@ -36,6 +36,7 @@ class StudentQueue:
     def define_slots(self):
         """Creates the slots associated."""
         capacity_used = 0
+        # print("define slots", self.school.get_ruleset())
         if self.school.get_ruleset() and not self.preference_mode:
             for rule in self.school.get_ruleset().get_rules_prioritized():
                 if rule.has_quota():
