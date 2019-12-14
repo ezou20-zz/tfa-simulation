@@ -36,7 +36,6 @@ class StudentQueue:
     def define_slots(self):
         """Creates the slots associated."""
         capacity_used = 0
-        # print("define slots", self.school.get_ruleset())
         if self.school.get_ruleset() and not self.preference_mode:
             for rule in self.school.get_ruleset().get_rules_prioritized():
                 if rule.has_quota():
@@ -44,7 +43,10 @@ class StudentQueue:
                     self.slot_queue.append(Slot(rule, slot_size))
                     capacity_used += slot_size
 
+
         self.slot_queue.append(Slot(None, self.school.capacity - capacity_used))
+
+        print("SLOT QUEUE", self.slot_queue)
 
     def append(self, student):
         """Appends a student to the queue."""
@@ -53,10 +55,12 @@ class StudentQueue:
         for slot in self.slot_queue:
 
             if slot.is_general_slot():
+                print("here")
                 self.assign_to_slot(slot, unassigned_student)
                 unassigned_student = slot.pop_rejected() if not self.preference_mode else None
 
             elif slot.rule.has_flexible_quota() or slot.rule.criteria in unassigned_student.get_characteristics():
+                print("here2")
                 self.assign_to_slot(slot, unassigned_student)
                 unassigned_student = slot.pop_rejected() if not self.preference_mode else None
 
@@ -72,15 +76,19 @@ class StudentQueue:
 
     def get_priority(self, slot, student):
         """Returns the priority of the student inside a slot."""
-        priorities = ()
+        priorities = (False)
         priority_rules = []
 
         if self.preference_mode:
             priority_rules = self.school.get_ruleset().get_rules_prioritized()
         else:
-            for rule in self.school.get_ruleset().get_rules_prioritized():
-                if not rule.has_quota() or (rule == slot.rule and slot.is_quoted_slot() and slot.rule.has_flexible_quota()):
-                    priority_rules.append(rule)
+            print("RULESET: ", self.school)
+            print(self.school.get_ruleset())
+            #.get_rules_prioritized)
+            if self.school.get_ruleset():
+                for rule in self.school.get_ruleset().get_rules_prioritized():
+                    if not rule.has_quota() or (rule == slot.rule and slot.is_quoted_slot() and slot.rule.has_flexible_quota()):
+                        priority_rules.append(rule)
 
         for rule in priority_rules:
             characteristic_group = student.get_characteristic(rule.criteria)  # ToDo: Find a better name for characteristic_group
@@ -94,7 +102,7 @@ class StudentQueue:
             else:
                 priorities += (False,)
 
-        return priorities
+        return (False)
 
     def evaluate_characteristic(self, characteristic):
         """Evaluates a characteristic according to it's criteria associated."""

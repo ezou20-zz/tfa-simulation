@@ -18,7 +18,7 @@ def create_schools():
     total_capacity = 0
 
     # get region names and sizes from data file
-    with open('../data/test_schools.csv', newline='') as datafile:
+    with open('../data/schools.csv', newline='') as datafile:
         filereader = csv.reader(datafile, delimiter=',')
         for row in filereader:
             [region_name, size] = row
@@ -118,13 +118,13 @@ def get_matchings(k_array, regions, schools, students):
 
     print("Starting one-stage")
     # ONE-STAGE MATCHING
-    one_stage_planner = psm.SocialPlanner(students, schools, psm.RuleSet())
-    one_stage_planner.run_matching(psm.DASTB())
-    for student in students:
-        one_stage_matches[student.id] = student.assigned_school
+    # one_stage_planner = psm.SocialPlanner(students, schools, psm.RuleSet())
+    # one_stage_planner.run_matching(psm.DASTB())
+    # for student in students:
+    #     one_stage_matches[student.id] = student.assigned_school
 
-    for student in students:
-            student.assigned_school = None
+    # for student in students:
+    #         student.assigned_school = None
     # TWO-STAGE MATCHING
     print("Starting two-stage")
     print("Starting stage 1")

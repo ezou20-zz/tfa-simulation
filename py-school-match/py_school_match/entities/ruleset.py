@@ -13,6 +13,7 @@ class RuleSet:
         :type new_rules: list.
         """
         self.rules = new_rules if new_rules else []
+        print(self.rules)
 
     def add_rule(self, rule):
         """Adds a rule from the ruleset."""

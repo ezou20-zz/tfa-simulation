@@ -35,6 +35,7 @@ class Slot:
 
     def sort_slot(self, get_priority):  # ToDo: Optimize insert + sort (the list is already sorted before the insert).
         """Sorts the slot according to the rules."""
+        print("QUEUE ", self.queue)
         self.queue.sort(key=lambda student: get_priority(self, student), reverse=True)
 
     def gen_indifference_groups(self, get_priority):

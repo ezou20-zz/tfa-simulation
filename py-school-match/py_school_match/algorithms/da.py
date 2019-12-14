@@ -40,6 +40,7 @@ class DA(AbstractMatchingAlgorithm):
                     if preference_type == "category":
                         student_preferences = student.category_preferences
                     pref_school = student.preferences[student.option_n]
+                    print("THIS IS THE SCHOOL", pref_school)
                     DA.assign_student(student, pref_school)
 
                     rejected_student = pref_school.assignation.get_rejected_student()
