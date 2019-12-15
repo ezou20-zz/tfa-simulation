@@ -1,3 +1,3 @@
-from py_school_match.algorithms import DAMTB, DASTB, SIC, MSIC, NSIC, TTC, MNSIC
-from py_school_match.entities import Criteria, Rule, RuleSet, School, Category, SocialPlanner, Student,Characteristic
-from py_school_match import util
+from py_school_match.algorithms import DA
+from py_school_match.entities import School, Category, SocialPlanner, Student
+# from py_school_match import util

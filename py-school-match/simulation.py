@@ -2,7 +2,6 @@ import py_school_match as psm
 import random
 import csv
 from collections import defaultdict
-from py_school_match.entities.student_queue import StudentQueue
 
 schools_per_region_by_size = {"S": 3, "M": 30, "L": 50}
 
@@ -118,42 +117,69 @@ def get_matchings(k_array, regions, schools, students):
 
     print("Starting one-stage")
     # ONE-STAGE MATCHING
-    # one_stage_planner = psm.SocialPlanner(students, schools, psm.RuleSet())
-    # one_stage_planner.run_matching(psm.DASTB())
-    # for student in students:
-    #     one_stage_matches[student.id] = student.assigned_school
+    one_stage_planner = psm.SocialPlanner(students, schools)
+    one_stage_planner.run_matching(psm.DA())
+    for student in students:
+        one_stage_matches[student.id] = student.assigned_school
 
-    # for student in students:
-    #         student.assigned_school = None
+    for student in students:
+        student.assigned_school = None
+    for school in schools:
+        school.reset_assignation()
+
     # TWO-STAGE MATCHING
     print("Starting two-stage")
     print("Starting stage 1")
     # stage 1: match between students and regions
-    two_stage_planner = psm.SocialPlanner(students, regions, psm.RuleSet())
-    print("test")
-    two_stage_planner.run_matching(psm.DASTB(), preference_type="category")
+    two_stage_planner = psm.SocialPlanner(students, regions)
+    # print("test")
+    two_stage_planner.run_matching(psm.DA(), preference_type="category")
     
+    print_students(students)
     print("Starting stage 2")
 
     # stage 2: iterate through each region and match within
     for region in regions:
-        region_students = region.assignation.get_all_students()
+        print("GOT HERE, REGION ID:, " + str(region.id))
+        region_students = region.assignation
+        print_students(region_students)
         region_schools = region.schools
+        print_schools(region_schools)
 
         # reset student assignments, not sure if necessary
         for student in region_students:
             student.assigned_school = None
 
         # match between region's students and schools in region
-        two_stage_planner = psm.SocialPlanner(region_students, region_schools, psm.RuleSet())
-        two_stage_planner.run_matching(psm.DASTB())
+        two_stage_planner = psm.SocialPlanner(region_students, region_schools)
+        two_stage_planner.run_matching(psm.DA())
 
         for student in region_students:
             two_stage_matches[student.id] = student.assigned_school
 
+        print("***************************************")
+        print_students(region_students)
+        print_schools(region_schools)
+
     print("ONE-STAGE RESULT:", {k:v.id for k, v in one_stage_matches.items()})
     print("TWO-STAGE RESULT:", {k:v.id for k, v in two_stage_matches.items()})
     return one_stage_matches, two_stage_matches
+
+def print_schools(schools):
+    for school in schools:
+        print("SCHOOL " + str(school.id))
+        print("Capacity: ", school.capacity)
+        print("Category: ", school.category)
+        print("Assignation: ", [student.id for student in school.assignation])
+        print()
+
+def print_students(students):
+    for student in students:
+        print("STUDENT " + str(student.id))
+        print("School Prefs: ", [school.id for school in student.preferences])
+        print("Region Prefs: ", [region.id for region in student.category_preferences])
+        print("School Assignment: ", student.assigned_school.id)
+        print()
 
 def run_simulation():
     random.seed(42)
@@ -165,13 +191,19 @@ def run_simulation():
     print("creating students")
     students = create_students(regions, schools, total_capacity)
 
+    # print_schools(schools)
+    # print_students(students)
+
     # eventually loop for different k_arrays
     # using array allows for different degrees of randomness between students
     # eg. first half completely parameterized by region, second half very random
-    k_array = [0] * len(students)
+    k_array = [1000] * len(students)
     print("get matchings")
     one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
-    compare_matchings(students, one_stage_matches, two_stage_matches)
+    
+    # 1 + 'hi'
+    print(compare_matchings(students, one_stage_matches, two_stage_matches))
+
 
 
 run_simulation()

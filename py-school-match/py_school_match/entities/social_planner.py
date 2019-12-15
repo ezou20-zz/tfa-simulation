@@ -1,5 +1,4 @@
 """This module defines a social planner."""
-from py_school_match.entities.ruleset import RuleSet
 
 class SocialPlanner:
     """This class defines a social planner. 
@@ -8,9 +7,8 @@ class SocialPlanner:
     and a set of rules.
     """
 
-    def __init__(self, students, schools, ruleset=None):
+    def __init__(self, students, schools):
         """Initializes a slot.
-
         :param students: A list of students.
         :type students: list.
         :param schools: A list of school
@@ -21,21 +19,22 @@ class SocialPlanner:
         """
         self.students = students
         self.schools = schools
-        self.ruleset = ruleset if ruleset else RuleSet()
+        # self.preference_type = preference_type
+        # self.ruleset = ruleset if ruleset else RuleSet()
 
-        self.assign_same_ruleset()  # By default it assigns the same ruleset to every school.            
+        # self.assign_same_ruleset()  # By default it assigns the same ruleset to every school.            
 
-    def assign_same_ruleset(self):
-        """Assigns the same ruleset to every school."""
-        for school in self.schools:
-            school.set_ruleset_n_reset(self.ruleset)  # ToDo: The assignation should update itself!
+    # def assign_same_ruleset(self):
+    #     """Assigns the same ruleset to every school."""
+    #     for school in self.schools:
+    #         school.set_ruleset_n_reset(self.ruleset)  # ToDo: The assignation should update itself!
 
-    def run_matching(self, algorithm, preference_type=None):
+    def run_matching(self, algorithm, preference_type = None):
         """Run the algorithm."""
-        algorithm.run(self.students, self.schools, self.ruleset, preference_type)
+        algorithm.run(self.students, self.schools, preference_type)
 
-    @staticmethod
-    def change_ruleset(school, ruleset):
-        """Changes the ruleset used in a school."""
-        school.ruleset = ruleset
-        school.reset_assignation()
+    # @staticmethod
+    # def change_ruleset(school, ruleset):
+    #     """Changes the ruleset used in a school."""
+    #     school.ruleset = ruleset
+    #     school.reset_assignation()

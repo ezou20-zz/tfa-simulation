@@ -15,7 +15,7 @@ class DA(AbstractMatchingAlgorithm):
     or reject these students based on their priority.
     """
 
-    def run(self, students, schools, ruleset, preference_type=None):
+    def run(self, students, schools, preference_type):
         """Runs the *Deferred Acceptance* algorithm.
 
         :param students: List of students.
@@ -25,52 +25,64 @@ class DA(AbstractMatchingAlgorithm):
         :param ruleset: Set of rules used.
         :type ruleset: Ruleset
         """
+        # for student in students:
+        #     setattr(student, 'option_n', 0)
+        #     setattr(student, 'assigned', False)
+
         for student in students:
-            setattr(student, 'option_n', 0)
-            setattr(student, 'assigned', False)
+            student_preferences = student.preferences
+            if preference_type == "category":
+                student_preferences = student.category_preferences
 
-        still_free_students = True
-        while still_free_students:
+            for pref in student_preferences:
+                if pref.capacity > len(pref.assignation):
+                    cur_pref = pref
+                    break
 
-            still_free_students = False
-            for student in students:
+            DA.assign_student(student, pref)
 
-                if not student.assigned:
-                    student_preferences = student.preferences
-                    if preference_type == "category":
-                        student_preferences = student.category_preferences
-                    pref_school = student.preferences[student.option_n]
-                    print("THIS IS THE SCHOOL", pref_school)
-                    DA.assign_student(student, pref_school)
+        # still_free_students = True
+        # while still_free_students:
 
-                    rejected_student = pref_school.assignation.get_rejected_student()
+        #     still_free_students = False
+        #     for student in students:
 
-                    if rejected_student:
-                        rejected_student.option_n += 1
-                        rejected_student_preferences = rejected_student.preferences
-                        if preference_type == "category":
-                            rejected_student_preferences = rejected_student.category_preferences
-                        if rejected_student.option_n < len(rejected_student_preferences):
-                            DA.unassign_student(rejected_student)
-                            still_free_students = True
-                        else:
-                            DA.definitely_unassign_student(rejected_student)
+        #         if not student.assigned:
+        #             student_preferences = student.preferences
+        #             if preference_type == "category":
+        #                 student_preferences = student.category_preferences
+        #             pref_school = student.preferences[student.option_n]
+        #             print("THIS IS THE SCHOOL", pref_school)
+        #             DA.assign_student(student, pref_school)
+
+        #             rejected_student = pref_school.assignation.get_rejected_student()
+
+        #             if rejected_student:
+        #                 rejected_student.option_n += 1
+        #                 rejected_student_preferences = rejected_student.preferences
+        #                 if preference_type == "category":
+        #                     rejected_student_preferences = rejected_student.category_preferences
+        #                 if rejected_student.option_n < len(rejected_student_preferences):
+        #                     DA.unassign_student(rejected_student)
+        #                     still_free_students = True
+        #                 else:
+        #                     DA.definitely_unassign_student(rejected_student)
 
     @staticmethod
     def assign_student(student, school):
         """Assigns a student to a school."""
         student.assigned_school = school
-        student.assigned = True
+        # student.assigned = True
         school.assignation.append(student)
 
-    @staticmethod
-    def unassign_student(student):
-        """Unassigns a student to a school."""
-        student.assigned = False
-        student.assigned_school = None
+    # @staticmethod
+    # def unassign_student(student):
+    #     """Unassigns a student to a school."""
+    #     student.assigned = False
+    #     student.assigned_school = None
 
-    @staticmethod
-    def definitely_unassign_student(student):
-        """Sets a student as rejected by all schools."""
-        student.assigned = True
-        student.assigned_school = None
+    # @staticmethod
+    # def definitely_unassign_student(student):
+    #     """Sets a student as rejected by all schools."""
+    #     student.assigned = True
+    #     student.assigned_school = None

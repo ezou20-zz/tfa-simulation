@@ -18,31 +18,15 @@ class Student:
         """
         self._id = id_ if id_ else next(Student.__id_counter)
         self.preferences = []
-        
+        self.category_preferences = []
 
-        self.__characteristics = defaultdict(list)
+        # self.__characteristics = defaultdict(list)
 
         self.assigned_school = None
 
     @property
     def id(self):
         return self._id
-
-    @property
-    def characteristics(self):
-        """Returns a list of characteristics."""
-        return self.__characteristics
-
-    def add_characteristic(self, characteristic):
-        """Adds a characteristic to the student."""
-        self.__characteristics[characteristic.criteria].append(characteristic)
-
-    def get_characteristic(self, criteria):
-        """Returns a characteristic associated with a criteria."""
-        if criteria in self.__characteristics:
-            return self.__characteristics[criteria]
-        else:
-            return []
 
     @staticmethod
     def reset_ids():
