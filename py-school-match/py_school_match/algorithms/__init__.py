@@ -14,5 +14,5 @@ All algorithms should implement :class:`.AbstractMatchingAlgorithm`.
 
 # from py_school_match.algorithms.ttc import TTC
 
-from py_school_match.algorithms.da import DA
+from py_school_match.algorithms.ssd import SSD
 # from py_school_match.algorithms.pi import PI
