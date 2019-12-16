@@ -1,18 +1,18 @@
 from random import normalvariate, uniform, seed
 
-from py_school_match.util.stat import get_variance
+from py_bucket_match.util.stat import get_variance
 
 
-def simulate_preferences(students, schools, alpha, n_pref_probabilities, schools_factors=None):
+def simulate_preferences(students, buckets, alpha, n_pref_probabilities, buckets_factors=None):
     gen_utilities = {}
-    for index, school in enumerate(schools):
-        gen_utilities[school] = normalvariate(0, 1) if not schools_factors else schools_factors[index]
+    for index, bucket in enumerate(buckets):
+        gen_utilities[bucket] = normalvariate(0, 1) if not buckets_factors else buckets_factors[index]
 
     for student in students:
         std_utilities = {}
-        variance = 1 if not schools_factors else get_variance(schools_factors)
-        for school in schools:
-            std_utilities[school] = normalvariate(0, variance**0.5) * (1 - alpha) + gen_utilities[school] * alpha
+        variance = 1 if not buckets_factors else get_variance(buckets_factors)
+        for bucket in buckets:
+            std_utilities[bucket] = normalvariate(0, variance**0.5) * (1 - alpha) + gen_utilities[bucket] * alpha
 
         pref = sorted(std_utilities.keys(), key=lambda s: std_utilities[s], reverse=True)
 

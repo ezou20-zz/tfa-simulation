@@ -24,7 +24,7 @@ class Student:
 
         # self.__characteristics = defaultdict(list)
 
-        self.assigned_school = None
+        self.assigned_bucket = None
 
     @property
     def id(self):

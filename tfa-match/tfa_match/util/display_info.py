@@ -9,8 +9,8 @@ def get_positions_stat(planner):
     """Returns a dictionary with positions as keys and student count as values."""
     ranking_stat = defaultdict(int)
     for student in planner.students:
-        if student.assigned_school:
-            ranking = student.preferences.index(student.assigned_school) + 1
+        if student.assigned_bucket:
+            ranking = student.preferences.index(student.assigned_bucket) + 1
             ranking_stat[ranking] += 1
         else:
             ranking_stat["NA"] += 1
