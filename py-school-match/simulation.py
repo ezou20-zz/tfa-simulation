@@ -1,10 +1,14 @@
 import py_school_match as psm
 import random
+import math
 import csv
 from collections import defaultdict
 import matplotlib.pyplot as plt
 
-schools_per_region_by_size = {"S": 3, "M": 30, "L": 50}
+# S: 0-50
+# M: 50-100
+# L: 100-200
+schools_per_region_by_size = {"S": (1, 50), "M": (50, 100), "L": (100, 200)}
 
 def print_matches(students):
     for student in students:
@@ -22,27 +26,31 @@ def create_schools():
         filereader = csv.reader(datafile, delimiter=',')
         for row in filereader:
             [region_name, size] = row
-            region_capacity = 0
+            lower, upper = schools_per_region_by_size[size]
+            region_capacity = random.randint(lower, upper)
             region_schools = []
-            region_size = schools_per_region_by_size[size]
+            region_size = 10
+            school_capacity = math.ceil(region_capacity / region_size)
 
-            # iterate through # of schools in region and create schools w/ random caps
-            for i in range(region_size):
-                capacity = random.randint(1,5)
-                school = psm.School(capacity)
+            # iterate through # of "buckets" in region and create schools w/ random caps
+            for _ in range(region_size):
+                school = psm.School(school_capacity)
                 school.category = region_name
                 schools.append(school)
                 region_schools.append(school)
 
-                total_capacity += capacity
-                region_capacity += capacity
+                total_capacity += school_capacity
+                # region_capacity += school_capacity
 
             # initialize region as Category object with list of schools
             region = psm.Category(region_name, region_schools, region_capacity)
             for school in region_schools:
                 school.category = region
             regions.append(region)
+
     print("TOTAL CAPACITY:", total_capacity)
+    print("TOTAL SCHOOLS: ", len(schools))
+    print("TOTAL REGIONS: ", len(regions))
     return regions, schools, total_capacity
 
 def create_students(regions, schools, total_capacity):
@@ -192,11 +200,32 @@ def print_students(students):
         print("School Assignment: ", student.assigned_school.id if student.assigned_school else None)
         print()
 
-def graph_results(x, y, title="Default Title", ylabel="Default ylabel"):
-    plt.plot(x, y, marker='o')
-    plt.ylabel(ylabel)
+def graph_results(ks, results):
+    deltas = [r["delta"] for r in results]
+    matching1_utilities = [r["matching1_utility"] for r in results]
+    matching2_utilities = [r["matching2_utility"] for r in results]
+    print("*************************RESULTS*************************")
+    print("Ks: ", ks)
+    print("Deltas: ", deltas)
+    print("Matching1 Utility: ", matching1_utilities)
+    print("Matching2 Utility: ", matching2_utilities)
+
+    plt.plot(ks, deltas, marker='v')
+    plt.ylabel("Change in Utility")
     plt.xlabel("K")
-    plt.title(title)
+    plt.title("Change in Total Welfare from One-Stage to Two-Stage")
+    plt.show()
+
+    plt.plot(ks, matching1_utilities, marker='v')
+    plt.ylabel("Utility")
+    plt.xlabel("K")
+    plt.title("One-Stage Matching Utilities")
+    plt.show()
+
+    plt.plot(ks, matching2_utilities, marker='v')
+    plt.ylabel("Utility")
+    plt.xlabel("K")
+    plt.title("Two-Stage Matching Utilities")
     plt.show()
 
 def run_simulation():
@@ -216,7 +245,6 @@ def run_simulation():
 
     results = []
     ks = [i for i in range(0, 100, 10)] + [i for i in range(100, 1000, 50)] + [i for i in range(1000, 2000, 100)]
-    # ks = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000]
     for k in ks:
         k_array = [k] * len(students)
         print("Get Matchings: k = " + str(k))
@@ -225,21 +253,8 @@ def run_simulation():
         match_results = compare_matchings(students, one_stage_matches, two_stage_matches)
         print(match_results)
         results.append(match_results)
-    
-    # print(results)
-    # print([r["delta"] for r in results])
-    graph_results(ks, [r["delta"] for r in results], title="Change in Total Welfare from One-Stage to Two-Stage")
-    # graph_results(ks, [r["better"] for r in results])
-    plt.plot(ks, [r["matching1_utility"] for r in results], marker='o')
-    # plt.plot(ks, [r["matching2_utility"] for r in results])
-    plt.ylabel("Utility")
-    plt.xlabel("K")
-    plt.title("comparison of Utilities between 1-Stage and 2-Stage")
-    plt.show()
-
-    # plt.hist([r["matching1_utility"] for r in results])
-    # plt.show()
-
+        
+    graph_results(ks, results)
 
 
 run_simulation()
