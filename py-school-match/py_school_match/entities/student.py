@@ -17,6 +17,7 @@ class Student:
         :type id_: Any.
         """
         self._id = id_ if id_ else next(Student.__id_counter)
+        self.original_preferences = []
         self.preferences = []
         self.category_preferences = []
         self.regional_preferences = []

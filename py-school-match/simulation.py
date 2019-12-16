@@ -2,6 +2,7 @@ import py_school_match as psm
 import random
 import csv
 from collections import defaultdict
+import matplotlib.pyplot as plt
 
 schools_per_region_by_size = {"S": 3, "M": 30, "L": 50}
 
@@ -63,6 +64,7 @@ def create_students(regions, schools, total_capacity):
             school_prefs.extend(region_school_prefs)
 
         student.preferences = school_prefs
+        student.original_preferences = school_prefs
         students.append(student)
     return students
 
@@ -71,16 +73,18 @@ def permute_preferences(students, k_array):
     # using array allows for different degrees of randomness between students
     for i in range(len(students)):
         student = students[i]
-        lst = student.preferences
+        lst = student.original_preferences
         num_schools = len(lst)
-        for k in range(k_array[i]):
+        for _ in range(k_array[i]):
             i1,i2 = random.sample(range(num_schools), 2)
             lst[i1], lst[i2] = lst[i2], lst[i1]
         student.preferences = lst
     return 
 
 def compare_matchings(students, matching1, matching2):
-    # COULD NOT RUN CODE SO NO GUARANTEE THIS WORKS
+    # total utilities of matcing1 and matching2
+    matching1_utility = 0
+    matching2_utility = 0
 
     # total number of students better off in matching 1
     total_better = 0
@@ -97,7 +101,9 @@ def compare_matchings(students, matching1, matching2):
         prefs = student.preferences
         s_id = student.id
         school1_rank = prefs.index(matching1[s_id])
+        matching1_utility -= school1_rank
         school2_rank = prefs.index(matching2[s_id])
+        matching2_utility -= school2_rank
         delta_rank_utility += school1_rank - school2_rank
         if school1_rank > school2_rank: total_better += 1
         elif school1_rank == school2_rank: total_same += 1
@@ -108,6 +114,8 @@ def compare_matchings(students, matching1, matching2):
         "same": total_same,
         "worse": total_worse,
         "delta": delta_rank_utility,
+        "matching1_utility": matching1_utility,
+        "matching2_utility": matching2_utility,
     }
 
 
@@ -115,6 +123,14 @@ def get_matchings(k_array, regions, schools, students):
     one_stage_matches = {} # dict mapping student id to School (objects)
     two_stage_matches = {} # same
 
+    for student in students:
+        student.assigned_school = None
+    for school in schools:
+        school.reset_assignation()
+    for region in regions:
+        region.reset_assignation()
+
+    print("Permuting preferences...")
     permute_preferences(students, k_array)
 
     print("Starting one-stage")
@@ -132,7 +148,7 @@ def get_matchings(k_array, regions, schools, students):
     # TWO-STAGE MATCHING
     print("Starting two-stage")
     print("Starting stage 1")
-    
+
     # stage 1: match between students and regions
     two_stage_planner = psm.SocialPlanner(students, regions)
     two_stage_planner.run_matching(psm.SSD(), preference_type="category")
@@ -176,6 +192,13 @@ def print_students(students):
         print("School Assignment: ", student.assigned_school.id if student.assigned_school else None)
         print()
 
+def graph_results(x, y, title="Default Title", ylabel="Default ylabel"):
+    plt.plot(x, y, marker='o')
+    plt.ylabel(ylabel)
+    plt.xlabel("K")
+    plt.title(title)
+    plt.show()
+
 def run_simulation():
     random.seed(42)
     print("reset")
@@ -190,11 +213,32 @@ def run_simulation():
     # eventually loop for different k_arrays
     # using array allows for different degrees of randomness between students
     # eg. first half completely parameterized by region, second half very random
-    k_array = [0] * len(students)
-    print("get matchings")
-    one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
+
+    results = []
+    ks = [i for i in range(0, 100, 10)] + [i for i in range(100, 1000, 50)] + [i for i in range(1000, 2000, 100)]
+    # ks = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000]
+    for k in ks:
+        k_array = [k] * len(students)
+        print("Get Matchings: k = " + str(k))
+        one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
+        
+        match_results = compare_matchings(students, one_stage_matches, two_stage_matches)
+        print(match_results)
+        results.append(match_results)
     
-    print(compare_matchings(students, one_stage_matches, two_stage_matches))
+    # print(results)
+    # print([r["delta"] for r in results])
+    graph_results(ks, [r["delta"] for r in results], title="Change in Total Welfare from One-Stage to Two-Stage")
+    # graph_results(ks, [r["better"] for r in results])
+    plt.plot(ks, [r["matching1_utility"] for r in results], marker='o')
+    # plt.plot(ks, [r["matching2_utility"] for r in results])
+    plt.ylabel("Utility")
+    plt.xlabel("K")
+    plt.title("comparison of Utilities between 1-Stage and 2-Stage")
+    plt.show()
+
+    # plt.hist([r["matching1_utility"] for r in results])
+    # plt.show()
 
 
 
