@@ -5,6 +5,8 @@ import csv
 from collections import defaultdict
 import matplotlib.pyplot as plt
 
+fig_dir = "figures/"
+
 # S: 0-50
 # M: 50-100
 # L: 100-200
@@ -74,6 +76,8 @@ def create_students(regions, schools, total_capacity):
         student.preferences = school_prefs
         student.original_preferences = school_prefs
         students.append(student)
+
+    print("TOTAL STUDENTS: ", len(students))
     return students
 
 def permute_preferences(students, k_array):
@@ -131,6 +135,7 @@ def get_matchings(k_array, regions, schools, students):
     one_stage_matches = {} # dict mapping student id to School (objects)
     two_stage_matches = {} # same
 
+    # reset all assignments
     for student in students:
         student.assigned_school = None
     for school in schools:
@@ -210,51 +215,84 @@ def graph_results(ks, results):
     print("Matching1 Utility: ", matching1_utilities)
     print("Matching2 Utility: ", matching2_utilities)
 
+    f = plt.figure()
     plt.plot(ks, deltas, marker='v')
     plt.ylabel("Change in Utility")
     plt.xlabel("K")
     plt.title("Change in Total Welfare from One-Stage to Two-Stage")
-    plt.show()
+    f.savefig(fig_dir + "delta-utility-1stage-2stage.png")
+    f.clear()
+    plt.close(f)
 
+    f = plt.figure()
     plt.plot(ks, matching1_utilities, marker='v')
     plt.ylabel("Utility")
     plt.xlabel("K")
     plt.title("One-Stage Matching Utilities")
-    plt.show()
+    f.savefig(fig_dir + "1stage-utility.png")
+    f.clear()
+    plt.close(f)
 
+    f = plt.figure()
     plt.plot(ks, matching2_utilities, marker='v')
     plt.ylabel("Utility")
     plt.xlabel("K")
     plt.title("Two-Stage Matching Utilities")
-    plt.show()
+    f.savefig(fig_dir + "2stage-utility.png")
+    f.clear()
+    plt.close(f)
 
 def run_simulation():
     random.seed(42)
-    print("reset")
+    print("Starting simulation...")
     psm.Student.reset_ids()
     psm.School.reset_ids()
-    print("creating schools")
+    print("creating schools....")
     regions, schools, total_capacity = create_schools()
-    print("creating students")
+    print("creating students....")
     students = create_students(regions, schools, total_capacity)
-
 
     # eventually loop for different k_arrays
     # using array allows for different degrees of randomness between students
     # eg. first half completely parameterized by region, second half very random
 
-    results = []
-    ks = [i for i in range(0, 100, 10)] + [i for i in range(100, 1000, 50)] + [i for i in range(1000, 2000, 100)]
-    for k in ks:
-        k_array = [k] * len(students)
-        print("Get Matchings: k = " + str(k))
-        one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
+    # results = []
+    # ks = [i for i in range(0, 100, 10)] + [i for i in range(100, 1000, 50)] + [i for i in range(1000, 2000, 100)]
+    # for k in ks:
+    #     k_array = [k] * len(students)
+    #     print("Get Matchings: k = " + str(k))
+    #     one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
         
-        match_results = compare_matchings(students, one_stage_matches, two_stage_matches)
-        print(match_results)
-        results.append(match_results)
+    #     match_results = compare_matchings(students, one_stage_matches, two_stage_matches)
+    #     print(match_results)
+    #     results.append(match_results)
         
-    graph_results(ks, results)
+    # graph_results(ks, results)
+
+    proportions = [i for i in range(0, len(students), 150)]
+    for k in [50, 100]:
+        print("************* K = " + str(k) + " ******************")
+        different_randomness_results = []
+        for i in proportions:
+            print("*************** proportion: " + str(round((i/len(students))*100, 2)) + " ****************")
+            k_array = [0] * (len(students) - i) + [k] * i
+            one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
+        
+            match_results = compare_matchings(students, one_stage_matches, two_stage_matches)
+            print(match_results)
+            different_randomness_results.append(match_results)
+
+        x_vals = [round((i/len(students))*100, 2) for i in proportions]
+        f = plt.figure()
+        plt.plot(x_vals, [m["delta"] for m in different_randomness_results], marker='o')
+        plt.ylabel("Delta")
+        plt.xlabel("Proportion with Randomness")
+        plt.title("Deltas for k = " + str(k))
+        f.savefig(fig_dir + "proportions-k-" + str(k) + ".png")
+        f.clear()
+        plt.close(f)
 
 
 run_simulation()
+
+
