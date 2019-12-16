@@ -10,7 +10,9 @@ fig_dir = "figures/"
 # S: 0-50
 # M: 50-100
 # L: 100-200
-schools_per_region_by_size = {"S": (1, 50), "M": (50, 100), "L": (100, 200)}
+schools_per_region_by_size = {"S": (1, 5), "M": (5, 10), "L": (10, 20)}
+
+region_size = 10
 
 def print_matches(students):
     for student in students:
@@ -29,18 +31,17 @@ def create_schools():
         for row in filereader:
             [region_name, size] = row
             lower, upper = schools_per_region_by_size[size]
-            region_capacity = random.randint(lower, upper)
             region_schools = []
-            region_size = 10
-            school_capacity = math.ceil(region_capacity / region_size)
+            region_capacity = 0
 
             # iterate through # of "buckets" in region and create schools w/ random caps
             for _ in range(region_size):
+                school_capacity = random.randint(lower, upper)
                 school = psm.School(school_capacity)
                 school.category = region_name
                 schools.append(school)
                 region_schools.append(school)
-
+                region_capacity += school_capacity
                 total_capacity += school_capacity
                 # region_capacity += school_capacity
 
@@ -64,7 +65,7 @@ def create_students(regions, schools, total_capacity):
     for i in range(num_students):
         student = psm.Student()
         school_prefs = []
-        region_prefs = [i for i in regions]
+        region_prefs = [region for region in regions]
         random.shuffle(region_prefs)
         student.category_preferences = region_prefs
 
@@ -73,8 +74,8 @@ def create_students(regions, schools, total_capacity):
             random.shuffle(region_school_prefs)
             school_prefs.extend(region_school_prefs)
 
-        student.preferences = school_prefs
-        student.original_preferences = school_prefs
+        student.preferences = school_prefs.copy()
+        student.original_preferences = school_prefs.copy()
         students.append(student)
 
     print("TOTAL STUDENTS: ", len(students))
@@ -85,7 +86,7 @@ def permute_preferences(students, k_array):
     # using array allows for different degrees of randomness between students
     for i in range(len(students)):
         student = students[i]
-        lst = student.original_preferences
+        lst = student.original_preferences.copy()
         num_schools = len(lst)
         for _ in range(k_array[i]):
             i1,i2 = random.sample(range(num_schools), 2)
@@ -216,29 +217,29 @@ def graph_results(ks, results):
     print("Matching2 Utility: ", matching2_utilities)
 
     f = plt.figure()
-    plt.plot(ks, deltas, marker='v')
+    plt.plot(ks, deltas, marker='o')
     plt.ylabel("Change in Utility")
     plt.xlabel("K")
     plt.title("Change in Total Welfare from One-Stage to Two-Stage")
-    f.savefig(fig_dir + "delta-utility-1stage-2stage.png")
+    f.savefig(fig_dir + "delta-utility-1stage-2stage.png", bbox_inches='tight')
     f.clear()
     plt.close(f)
 
     f = plt.figure()
-    plt.plot(ks, matching1_utilities, marker='v')
+    plt.plot(ks, matching1_utilities, marker='o')
     plt.ylabel("Utility")
     plt.xlabel("K")
     plt.title("One-Stage Matching Utilities")
-    f.savefig(fig_dir + "1stage-utility.png")
+    f.savefig(fig_dir + "1stage-utility.png", bbox_inches='tight')
     f.clear()
     plt.close(f)
 
     f = plt.figure()
-    plt.plot(ks, matching2_utilities, marker='v')
+    plt.plot(ks, matching2_utilities, marker='o')
     plt.ylabel("Utility")
     plt.xlabel("K")
     plt.title("Two-Stage Matching Utilities")
-    f.savefig(fig_dir + "2stage-utility.png")
+    f.savefig(fig_dir + "2stage-utility.png", bbox_inches='tight')
     f.clear()
     plt.close(f)
 
@@ -256,21 +257,24 @@ def run_simulation():
     # using array allows for different degrees of randomness between students
     # eg. first half completely parameterized by region, second half very random
 
-    # results = []
-    # ks = [i for i in range(0, 100, 10)] + [i for i in range(100, 1000, 50)] + [i for i in range(1000, 2000, 100)]
-    # for k in ks:
-    #     k_array = [k] * len(students)
-    #     print("Get Matchings: k = " + str(k))
-    #     one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
+    print("************** Varying K *****************")
+    results = []
+    ks = [i for i in range(0, 100, 10)] + [i for i in range(100, 1000, 50)] + [i for i in range(1000, 2000, 100)]
+    for k in ks:
+        print("********** K = " + str(k) + " ************")
+        k_array = [k] * len(students)
+        print("Get Matchings: k = " + str(k))
+        one_stage_matches, two_stage_matches = get_matchings(k_array, regions, schools, students)
         
-    #     match_results = compare_matchings(students, one_stage_matches, two_stage_matches)
-    #     print(match_results)
-    #     results.append(match_results)
+        match_results = compare_matchings(students, one_stage_matches, two_stage_matches)
+        print(match_results)
+        results.append(match_results)
         
-    # graph_results(ks, results)
+    graph_results(ks, results)
 
+    print("**************** Varying Proportion that are Random ******************")
     proportions = [i for i in range(0, len(students), 150)]
-    for k in [50, 100]:
+    for k in [50, 100, 250, 500, 1000]:
         print("************* K = " + str(k) + " ******************")
         different_randomness_results = []
         for i in proportions:
@@ -285,13 +289,12 @@ def run_simulation():
         x_vals = [round((i/len(students))*100, 2) for i in proportions]
         f = plt.figure()
         plt.plot(x_vals, [m["delta"] for m in different_randomness_results], marker='o')
-        plt.ylabel("Delta")
-        plt.xlabel("Proportion with Randomness")
-        plt.title("Deltas for k = " + str(k))
-        f.savefig(fig_dir + "proportions-k-" + str(k) + ".png")
+        plt.ylabel("Utility")
+        plt.xlabel("Proportion with Randomness (%)")
+        plt.title("Change in Welfare with Varying Proportion of Teachers with Random Preferences (K = " + str(k) + ")")
+        f.savefig(fig_dir + "proportions-k-" + str(k) + ".png", bbox_inches='tight')
         f.clear()
         plt.close(f)
-
 
 run_simulation()
 
