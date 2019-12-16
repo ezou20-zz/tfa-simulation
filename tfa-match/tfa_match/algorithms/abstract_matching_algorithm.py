@@ -9,12 +9,12 @@ class AbstractMatchingAlgorithm(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def run(self, students, buckets, ruleset):
+    def run(self, teachers, buckets, ruleset):
         """
         Abstract method algorithms should implement.
         
-        :param students: List of students.
-        :type students: list
+        :param teachers: List of teachers.
+        :type teachers: list
         :param buckets: List of buckets.
         :type buckets: list
         :param ruleset: The ruleset to be used.

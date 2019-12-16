@@ -11,7 +11,7 @@ class Bucket:
     def __init__(self, capacity, id_=""):
         """Initializes a bucket.
 
-        :param capacity: The maximum number of students.
+        :param capacity: The maximum number of teachers.
         :type capacity: int.
         :param id_: Any unique identifier.
         :type id_: Any.

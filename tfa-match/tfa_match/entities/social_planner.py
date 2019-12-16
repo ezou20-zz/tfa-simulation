@@ -3,21 +3,21 @@
 class SocialPlanner:
     """This class defines a social planner. 
     A social planner is used to run a algorithm
-    using a group of students, a group of buckets
+    using a group of teachers, a group of buckets
     and a set of rules.
     """
 
-    def __init__(self, students, buckets):
+    def __init__(self, teachers, buckets):
         """Initializes a slot.
-        :param students: A list of students.
-        :type students: list.
+        :param teachers: A list of teachers.
+        :type teachers: list.
         :param buckets: A list of bucket
         :type buckets: list.
         :param ruleset: The set of rules. By default, it uses the
         same ruleset in every bucket.
         :type ruleset: :class:`.Ruleset`.
         """
-        self.students = students
+        self.teachers = teachers
         self.buckets = buckets
         # self.preference_type = preference_type
         # self.ruleset = ruleset if ruleset else RuleSet()
@@ -31,7 +31,7 @@ class SocialPlanner:
 
     def run_matching(self, algorithm, preference_type = None):
         """Run the algorithm."""
-        algorithm.run(self.students, self.buckets, preference_type)
+        algorithm.run(self.teachers, self.buckets, preference_type)
 
     # @staticmethod
     # def change_ruleset(bucket, ruleset):

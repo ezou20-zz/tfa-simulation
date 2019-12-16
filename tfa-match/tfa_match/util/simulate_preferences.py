@@ -3,12 +3,12 @@ from random import normalvariate, uniform, seed
 from py_bucket_match.util.stat import get_variance
 
 
-def simulate_preferences(students, buckets, alpha, n_pref_probabilities, buckets_factors=None):
+def simulate_preferences(teachers, buckets, alpha, n_pref_probabilities, buckets_factors=None):
     gen_utilities = {}
     for index, bucket in enumerate(buckets):
         gen_utilities[bucket] = normalvariate(0, 1) if not buckets_factors else buckets_factors[index]
 
-    for student in students:
+    for teacher in teachers:
         std_utilities = {}
         variance = 1 if not buckets_factors else get_variance(buckets_factors)
         for bucket in buckets:
@@ -17,7 +17,7 @@ def simulate_preferences(students, buckets, alpha, n_pref_probabilities, buckets
         pref = sorted(std_utilities.keys(), key=lambda s: std_utilities[s], reverse=True)
 
         n_pref = weighted_choice([(v+1, p) for v, p in enumerate(n_pref_probabilities)])
-        student.preferences = pref[:n_pref]
+        teacher.preferences = pref[:n_pref]
 
 
 def weighted_choice(choices):

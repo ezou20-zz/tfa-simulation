@@ -1,22 +1,22 @@
-"""This module defines a student."""
+"""This module defines a teacher."""
 
 from collections import defaultdict
 from itertools import count
 
 
-class Student:
-    """This class defines a student."""
+class Teacher:
+    """This class defines a teacher."""
 
     __id_counter = count(0)
     """This is used to generate an incremental id."""
 
     def __init__(self, id_=""):
-        """Initializes a student.
+        """Initializes a teacher.
 
         :param id_: Any unique identifier.
         :type id_: Any.
         """
-        self._id = id_ if id_ else next(Student.__id_counter)
+        self._id = id_ if id_ else next(Teacher.__id_counter)
         self.original_preferences = []
         self.preferences = []
         self.category_preferences = []
@@ -33,4 +33,4 @@ class Student:
     @staticmethod
     def reset_ids():
         """Resets the incremental id."""
-        Student.__id_counter = count(0)
+        Teacher.__id_counter = count(0)
