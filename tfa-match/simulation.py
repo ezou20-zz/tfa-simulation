@@ -113,10 +113,10 @@ def compare_matchings(teachers, matching1, matching2):
     for teacher in teachers:
         prefs = teacher.preferences
         s_id = teacher.id
-        bucket1_rank = prefs.index(matching1[s_id])
-        matching1_utility -= bucket1_rank
-        bucket2_rank = prefs.index(matching2[s_id])
-        matching2_utility -= bucket2_rank
+        bucket1_rank = 2 ** (-prefs.index(matching1[s_id])) #prefs.index(matching1[s_id])
+        matching1_utility += bucket1_rank
+        bucket2_rank = 2 ** (-prefs.index(matching2[s_id]))
+        matching2_utility += bucket2_rank
         delta_rank_utility += bucket1_rank - bucket2_rank
         if bucket1_rank > bucket2_rank: total_better += 1
         elif bucket1_rank == bucket2_rank: total_same += 1
@@ -219,7 +219,7 @@ def graph_results(ks, results):
     f = plt.figure()
     plt.plot(ks, deltas, marker='o')
     plt.ylabel("Change in Utility")
-    plt.xlabel("K")
+    plt.xlabel("Parameterizability Factor (k)")
     plt.title("Change in Total Welfare from One-Stage to Two-Stage")
     f.savefig(fig_dir + "delta-utility-1stage-2stage.png", bbox_inches='tight')
     f.clear()
@@ -228,7 +228,7 @@ def graph_results(ks, results):
     f = plt.figure()
     plt.plot(ks, matching1_utilities, marker='o')
     plt.ylabel("Utility")
-    plt.xlabel("K")
+    plt.xlabel("Parameterizability Factor (k)")
     plt.title("One-Stage Matching Utilities")
     f.savefig(fig_dir + "1stage-utility.png", bbox_inches='tight')
     f.clear()
@@ -237,7 +237,7 @@ def graph_results(ks, results):
     f = plt.figure()
     plt.plot(ks, matching2_utilities, marker='o')
     plt.ylabel("Utility")
-    plt.xlabel("K")
+    plt.xlabel("Parameterizability Factor (k)")
     plt.title("Two-Stage Matching Utilities")
     f.savefig(fig_dir + "2stage-utility.png", bbox_inches='tight')
     f.clear()
@@ -269,7 +269,12 @@ def run_simulation():
         match_results = compare_matchings(teachers, one_stage_matches, two_stage_matches)
         print(match_results)
         results.append(match_results)
-        
+    
+    # print(ks)
+    # print([r['better'] for r in results])
+    # print([r['worse'] for r in results])
+    # print([r['same'] for r in results])
+
     graph_results(ks, results)
 
     print("**************** Varying Proportion that are Random ******************")
@@ -291,7 +296,7 @@ def run_simulation():
         plt.plot(x_vals, [m["delta"] for m in different_randomness_results], marker='o')
         plt.ylabel("Utility")
         plt.xlabel("Proportion with Randomness (%)")
-        plt.title("Change in Welfare with Varying Proportion of Teachers with Random Preferences (K = " + str(k) + ")")
+        plt.title("Change in Welfare with Varying Proportion of Teachers with Random Preferences (k = " + str(k) + ")")
         f.savefig(fig_dir + "proportions-k-" + str(k) + ".png", bbox_inches='tight')
         f.clear()
         plt.close(f)
