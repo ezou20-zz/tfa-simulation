@@ -219,8 +219,8 @@ def graph_results(ks, results):
     f = plt.figure()
     plt.plot(ks, deltas, marker='o')
     plt.ylabel("Change in Utility")
-    plt.xlabel("Parameterizability Factor (k)")
-    plt.title("Change in Total Welfare from One-Stage to Two-Stage")
+    plt.xlabel("Parametrizability Factor (k)")
+    plt.title("Change in Total Welfare from TOSM to TFA")
     f.savefig(fig_dir + "delta-utility-1stage-2stage.png", bbox_inches='tight')
     f.clear()
     plt.close(f)
@@ -228,8 +228,8 @@ def graph_results(ks, results):
     f = plt.figure()
     plt.plot(ks, matching1_utilities, marker='o')
     plt.ylabel("Utility")
-    plt.xlabel("Parameterizability Factor (k)")
-    plt.title("One-Stage Matching Utilities")
+    plt.xlabel("Parametrizability Factor (k)")
+    plt.title("TOSM Matching Utilities")
     f.savefig(fig_dir + "1stage-utility.png", bbox_inches='tight')
     f.clear()
     plt.close(f)
@@ -237,8 +237,8 @@ def graph_results(ks, results):
     f = plt.figure()
     plt.plot(ks, matching2_utilities, marker='o')
     plt.ylabel("Utility")
-    plt.xlabel("Parameterizability Factor (k)")
-    plt.title("Two-Stage Matching Utilities")
+    plt.xlabel("Parametrizability Factor (k)")
+    plt.title("TFA Matching Utilities")
     f.savefig(fig_dir + "2stage-utility.png", bbox_inches='tight')
     f.clear()
     plt.close(f)
@@ -255,7 +255,7 @@ def run_simulation():
 
     # eventually loop for different k_arrays
     # using array allows for different degrees of randomness between teachers
-    # eg. first half completely parameterized by region, second half very random
+    # eg. first half completely parametrized by region, second half very random
 
     print("************** Varying K *****************")
     results = []
